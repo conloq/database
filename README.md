@@ -1,8 +1,8 @@
 # Banco de Dados — MASH
 
-Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no contexto do Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
+Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
 
-O esquema abaixo representa o **estado atual do backend**, com base nos models Sequelize existentes no projeto.
+> **Status:** este documento descreve o **schema atual do backend**, com base nos models Sequelize existentes no projeto. Ele não representa, necessariamente, o modelo final previsto para as próximas etapas do Projeto Integrador.
 
 ---
 
@@ -12,18 +12,20 @@ O esquema abaixo representa o **estado atual do backend**, com base nos models S
 - **Sequelize ORM**
 - **Node.js**
 
-A configuração atual do backend utiliza:
+A configuração local atual utiliza:
 
-- Dialeto: `mysql`
-- Host: `localhost`
-- Banco: `cervejaria`
-- Timezone: `-03:00`
+```text
+Dialect: mysql
+Host: localhost
+Database: cervejaria
+Timezone: -03:00
+```
 
-> **Importante:** credenciais de banco não devem ser versionadas no repositório. Em produção, utilize variáveis de ambiente para host, usuário, senha e nome do banco.
+> Credenciais de banco não devem ser mantidas no código em ambientes reais. Utilize variáveis de ambiente para usuário, senha, host e nome do banco.
 
 ---
 
-## Estrutura atual
+## Escopo atual
 
 O banco possui cinco entidades principais:
 
@@ -31,19 +33,27 @@ O banco possui cinco entidades principais:
 |---|---|
 | `usuarios` | Armazena os usuários do sistema |
 | `receitas` | Armazena as receitas cadastradas pelos usuários |
-| `iodos` | Armazena as configurações do teste de iodo de uma receita |
-| `temperaturas` | Armazena as configurações de temperatura associadas a uma receita |
+| `iodos` | Armazena a configuração do teste de iodo associada a uma receita |
+| `temperaturas` | Armazena configurações de temperatura associadas a uma receita |
 | `Historico_Logins` | Armazena registros de acesso dos usuários |
 
-Como os timestamps do Sequelize não foram desativados, as tabelas também utilizam os campos:
+Os models atuais não desativam os timestamps padrão do Sequelize. Por isso, as tabelas também possuem:
 
 - `id`
 - `createdAt`
 - `updatedAt`
 
+### Observação sobre o Projeto Integrador
+
+O **recorte acadêmico atual** do Projeto Integrador está focado no **teste do iodo por visão computacional**.
+
+A tabela `temperaturas` permanece documentada porque existe no backend atual, mas não faz parte do foco acadêmico principal desta etapa.
+
 ---
 
-## Diagrama MER
+# Diagrama MER
+
+O GitHub renderiza o diagrama abaixo automaticamente por meio de Mermaid.
 
 ```mermaid
 erDiagram
@@ -108,27 +118,27 @@ erDiagram
     }
 ```
 
-### Cardinalidades
+## Cardinalidades
 
 | Relacionamento | Cardinalidade | Regra |
 |---|---|---|
-| `usuarios` → `receitas` | `1 : 0..N` | Um usuário pode não possuir receita ou possuir várias |
-| `usuarios` → `Historico_Logins` | `1 : 0..N` | Um usuário pode possuir vários registros de acesso |
-| `receitas` → `iodos` | `1 : 0..N` | Uma receita pode possuir vários registros/configurações de iodo |
-| `receitas` → `temperaturas` | `1 : 0..N` | Uma receita pode possuir vários registros/configurações de temperatura |
+| `usuarios` → `receitas` | `1 : 0..N` | Um usuário pode não possuir receitas ou possuir várias |
+| `usuarios` → `Historico_Logins` | `1 : 0..N` | Um usuário pode possuir zero ou vários registros de acesso |
+| `receitas` → `iodos` | `1 : 0..N` | Uma receita pode possuir zero ou vários registros de configuração do teste de iodo |
+| `receitas` → `temperaturas` | `1 : 0..N` | Uma receita pode possuir zero ou vários registros de temperatura |
 
-Cada registro filho possui uma chave estrangeira obrigatória. Portanto:
+No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
 
-- toda `receita` pertence a exatamente um `usuario`;
-- todo registro de `iodo` pertence a exatamente uma `receita`;
-- todo registro de `temperatura` pertence a exatamente uma `receita`;
-- todo registro de `Historico_Logins` pertence a exatamente um `usuario`.
+- cada `receita` pertence a exatamente um `usuario`;
+- cada registro de `iodo` pertence a exatamente uma `receita`;
+- cada registro de `temperatura` pertence a exatamente uma `receita`;
+- cada registro de `Historico_Logins` pertence a exatamente um `usuario`.
 
 ---
 
-## Entidades
+# Estrutura das tabelas
 
-### `usuarios`
+## `usuarios`
 
 | Campo | Tipo | Nulo | Chave |
 |---|---|---:|---|
@@ -141,9 +151,11 @@ Cada registro filho possui uma chave estrangeira obrigatória. Portanto:
 | `createdAt` | `DATETIME` | Não | |
 | `updatedAt` | `DATETIME` | Não | |
 
+> No model atual, `email` ainda não possui constraint `UNIQUE`. Caso o e-mail seja utilizado como identificador de login, recomenda-se adicionar essa restrição em uma migration futura.
+
 ---
 
-### `receitas`
+## `receitas`
 
 | Campo | Tipo | Nulo | Chave / referência |
 |---|---|---:|---|
@@ -153,11 +165,11 @@ Cada registro filho possui uma chave estrangeira obrigatória. Portanto:
 | `createdAt` | `DATETIME` | Não | |
 | `updatedAt` | `DATETIME` | Não | |
 
-A relação `receitas.usuario_id → usuarios.id` não possui `ON DELETE CASCADE` definido no model atual.
+A relação `receitas.usuario_id → usuarios.id` **não possui `ON DELETE CASCADE`** definido no model atual.
 
 ---
 
-### `iodos`
+## `iodos`
 
 | Campo | Tipo | Nulo | Chave / referência |
 |---|---|---:|---|
@@ -171,9 +183,11 @@ A relação `receitas.usuario_id → usuarios.id` não possui `ON DELETE CASCADE
 
 Ao excluir uma receita, seus registros relacionados de iodo são removidos por `ON DELETE CASCADE`.
 
+> Atualmente esta tabela representa **configuração do teste de iodo**, e não a execução ou o resultado da análise por visão computacional.
+
 ---
 
-### `temperaturas`
+## `temperaturas`
 
 | Campo | Tipo | Nulo | Chave / referência |
 |---|---|---:|---|
@@ -196,7 +210,7 @@ Ao excluir uma receita, seus registros relacionados de temperatura são removido
 
 ---
 
-### `Historico_Logins`
+## `Historico_Logins`
 
 | Campo | Tipo | Nulo | Chave / referência |
 |---|---|---:|---|
@@ -213,11 +227,13 @@ Ao excluir uma receita, seus registros relacionados de temperatura são removido
 
 Ao excluir um usuário, seus registros de histórico de login são removidos por `ON DELETE CASCADE`.
 
+> O nome `Historico_Logins` segue a pluralização esperada do model `Historico_Login`. Como nomes de tabela podem apresentar diferenças de sensibilidade a maiúsculas e minúsculas entre ambientes MySQL, recomenda-se padronizar nomes em minúsculas em uma futura migration.
+
 ---
 
-## Integridade referencial
+# Integridade referencial
 
-As chaves estrangeiras atuais são:
+As relações atuais são:
 
 ```text
 receitas.usuario_id
@@ -233,7 +249,7 @@ Historico_Logins.usuario_id
     → usuarios.id
 ```
 
-Resumo visual:
+Resumo:
 
 ```text
 USUARIO
@@ -249,7 +265,7 @@ USUARIO
 
 ---
 
-## Script SQL
+# Script SQL
 
 O arquivo principal do schema é:
 
@@ -266,19 +282,27 @@ Ele contém:
 - índices das relações;
 - regras de exclusão em cascata existentes nos models.
 
-### Executar pelo MySQL
+## Atenção: script destrutivo
+
+O script atual contém comandos `DROP TABLE IF EXISTS`.
+
+Isso significa que ele **remove as tabelas existentes antes de recriá-las**.
+
+> Utilize o script somente em ambiente local, acadêmico, de desenvolvimento ou em uma base descartável. Não execute diretamente em produção ou em um banco que contenha dados que precisam ser preservados.
+
+---
+
+# Executando localmente
+
+## Pelo terminal
 
 ```bash
 mysql -u root -p < mash_modelo_atual.sql
 ```
 
-Ou, caso o banco já exista:
+Como o próprio script cria e seleciona o banco `cervejaria`, não é necessário criá-lo manualmente antes da execução.
 
-```bash
-mysql -u root -p cervejaria < mash_modelo_atual.sql
-```
-
-Também é possível executar o script utilizando ferramentas como:
+Também é possível utilizar:
 
 - MySQL Workbench
 - DBeaver
@@ -286,9 +310,9 @@ Também é possível executar o script utilizando ferramentas como:
 
 ---
 
-## Arquivos do banco
+# Arquivos do banco
 
-Organização recomendada:
+Estrutura recomendada no repositório:
 
 ```text
 database/
@@ -299,13 +323,15 @@ database/
 └── diagrama_mer_mash.mmd
 ```
 
-### Arquivos do MER
+## Arquivos do MER
 
-- `diagrama_mer_mash.png`: versão para visualização rápida e documentação;
-- `diagrama_mer_mash.svg`: versão vetorial;
-- `diagrama_mer_mash.mmd`: versão editável em Mermaid.
+| Arquivo | Finalidade |
+|---|---|
+| `diagrama_mer_mash.png` | Visualização rápida |
+| `diagrama_mer_mash.svg` | Versão vetorial |
+| `diagrama_mer_mash.mmd` | Fonte editável em Mermaid |
 
-Se desejar exibir também a imagem exportada no README:
+A versão PNG também pode ser exibida no README:
 
 ```md
 ![Diagrama MER](./diagrama_mer_mash.png)
@@ -313,63 +339,53 @@ Se desejar exibir também a imagem exportada no README:
 
 ---
 
-## Escopo atual do Projeto Integrador
+# Evolução prevista para o teste do iodo
 
-Este banco representa o **estado atual do backend**.
-
-O foco acadêmico atual do Projeto Integrador é a **verificação do teste do iodo por visão computacional**.
-
-O model atual de `iodos` armazena somente informações de configuração do teste:
+O model atual de `iodos` armazena apenas:
 
 - tempo da primeira coleta;
 - intervalo entre testes;
 - quantidade máxima de testes;
 - receita associada.
 
-Ainda não existem, no schema atual, entidades próprias para armazenar:
+Para atender completamente ao fluxo de visão computacional previsto no Projeto Integrador, o banco deverá futuramente contemplar estruturas para registrar, quando essas funcionalidades forem implementadas:
 
 - lote de produção;
-- imagem capturada do teste;
-- resultado da análise (`passou` / `não passou`);
-- data e hora de cada análise;
-- nível de confiança;
-- histórico das análises realizadas.
+- execução individual do teste;
+- imagem capturada;
+- data e hora da análise;
+- resultado `passou` / `não passou`;
+- nível de confiança da classificação;
+- histórico das análises.
 
-Essas estruturas devem ser adicionadas ao banco apenas quando forem implementadas no backend, mantendo o schema, os models e a documentação sincronizados.
+Essas estruturas **não fazem parte do schema atual** e não devem ser documentadas como implementadas antes de existirem no backend.
 
 ---
 
-## Boas práticas
+# Boas práticas para evolução
 
-Para evolução do banco:
-
-1. Versionar alterações estruturais por meio de migrations.
+1. Utilizar **migrations do Sequelize** para alterações de estrutura.
 2. Não armazenar credenciais diretamente no código.
-3. Utilizar variáveis de ambiente para dados de conexão.
-4. Não armazenar senhas em texto puro.
+3. Utilizar variáveis de ambiente para configuração do banco.
+4. Nunca armazenar senhas em texto puro.
 5. Utilizar hash seguro para senhas.
 6. Manter índices nas chaves estrangeiras.
-7. Validar constraints no banco e também na aplicação.
-8. Atualizar este README e o MER quando o schema for alterado.
+7. Aplicar validações tanto no banco quanto na aplicação.
+8. Atualizar o MER e este README sempre que o schema for alterado.
 9. Evitar alterações manuais diretamente no banco de produção.
+10. Criar backup antes de qualquer migration destrutiva.
 
 ---
 
-## Observação sobre o Sequelize
+# Pontos de atenção do schema atual
 
-Os models atuais não desativam os timestamps do Sequelize. Por isso, `createdAt` e `updatedAt` fazem parte do schema documentado.
+Os itens abaixo refletem o estado atual dos models e podem ser tratados em evoluções futuras:
 
-O nome `Historico_Logins` segue a pluralização padrão aplicada ao model `Historico_Login`.
-
-Caso futuramente sejam utilizadas opções como:
-
-```js
-timestamps: false
-freezeTableName: true
-underscored: true
-```
-
-o schema e esta documentação deverão ser revisados.
+- `email` ainda não possui `UNIQUE`;
+- o nome `Historico_Logins` não segue o mesmo padrão de caixa das demais tabelas;
+- o arquivo de configuração local ainda deve ser migrado para variáveis de ambiente antes de uso fora do desenvolvimento;
+- `iodos` ainda não registra resultados reais das análises;
+- `temperaturas` permanece no backend, embora esteja fora do foco acadêmico principal desta etapa.
 
 ---
 
