@@ -134,7 +134,7 @@ No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
 - cada `receita` pertence a exatamente um `usuario`;
 - cada registro de `iodo` pertence a exatamente uma `receita`;
 - cada registro de `temperatura` pertence a exatamente uma `receita`;
-- cada registro de `Historico_Login` pertence a exatamente um `usuario`.
+- cada registro de `Historico_Logins` pertence a exatamente um `usuario`.
 
 ---
 
@@ -153,7 +153,7 @@ No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
 | `createdAt` | `DATETIME` | Não | |
 | `updatedAt` | `DATETIME` | Não | |
 
-> No model atual, `email` ainda possui constraint `UNIQUE`. Caso o e-mail seja utilizado como identificador de login, recomenda-se manter essa restrição no banco e no model.
+> No schema do app legado, `email` **ainda não possui** constraint `UNIQUE`; o model `Users` do Back-End já declara `unique: true` no Sequelize — a restrição será unificada na migração (#30).
 
 ---
 
