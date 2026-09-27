@@ -4,6 +4,8 @@ Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido n
 
 > **Status:** este documento descreve o **schema atual do backend**, com base nos models Sequelize existentes no projeto. Ele não representa, necessariamente, o modelo final previsto para as próximas etapas do Projeto Integrador.
 
+> **Atualização de 26/09/2026:** foi decidida a convenção de naming do projeto. As colunas físicas permanecem `snake_case`, e o contrato JSON da API é `camelCase` (tradução na borda, não via `underscored: true`). A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
+
 ---
 
 ## Tecnologias
@@ -151,7 +153,7 @@ No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
 | `createdAt` | `DATETIME` | Não | |
 | `updatedAt` | `DATETIME` | Não | |
 
-> No model atual, `email` ainda não possui constraint `UNIQUE`. Caso o e-mail seja utilizado como identificador de login, recomenda-se adicionar essa restrição em uma migration futura.
+> No schema do app legado, `email` **ainda não possui** constraint `UNIQUE`; o model `Users` do Back-End já declara `unique: true` no Sequelize — a restrição será unificada na migração (#30).
 
 ---
 
@@ -227,7 +229,7 @@ Ao excluir uma receita, seus registros relacionados de temperatura são removido
 
 Ao excluir um usuário, seus registros de histórico de login são removidos por `ON DELETE CASCADE`.
 
-> O nome `Historico_Logins` segue a pluralização esperada do model `Historico_Login`. Como nomes de tabela podem apresentar diferenças de sensibilidade a maiúsculas e minúsculas entre ambientes MySQL, recomenda-se padronizar nomes em minúsculas em uma futura migration.
+> O nome `Historico_Logins` segue a pluralização esperada do model `Historico_Login`. Como nomes de tabela podem apresentar diferenças de sensibilidade a maiúsculas e minúsculas entre ambientes MySQL, recomenda-se padronizar nomes em minúsculas em uma futura evolução do schema.
 
 ---
 
@@ -364,7 +366,7 @@ Essas estruturas **não fazem parte do schema atual** e não devem ser documenta
 
 # Boas práticas para evolução
 
-1. Utilizar **migrations do Sequelize** para alterações de estrutura.
+1. **Alterações de schema do Back-End devem ser acompanhadas de uma issue própria e teste em banco vazio** antes de serem aplicadas; ver também as decisões de 26/09 sobre migrations no Back-End.
 2. Não armazenar credenciais diretamente no código.
 3. Utilizar variáveis de ambiente para configuração do banco.
 4. Nunca armazenar senhas em texto puro.
@@ -381,7 +383,7 @@ Essas estruturas **não fazem parte do schema atual** e não devem ser documenta
 
 Os itens abaixo refletem o estado atual dos models e podem ser tratados em evoluções futuras:
 
-- `email` ainda não possui `UNIQUE`;
+- `email` ainda não possui `UNIQUE` no app legado;
 - o nome `Historico_Logins` não segue o mesmo padrão de caixa das demais tabelas;
 - o arquivo de configuração local ainda deve ser migrado para variáveis de ambiente antes de uso fora do desenvolvimento;
 - `iodos` ainda não registra resultados reais das análises;
