@@ -4,7 +4,7 @@ Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido n
 
 > **Status:** este documento descreve o **schema atual do backend**, com base nos models Sequelize existentes no projeto. Ele não representa, necessariamente, o modelo final previsto para as próximas etapas do Projeto Integrador.
 
-> **Atualização de 26/09/2026:** foi decidida a convenção de naming do projeto. As colunas físicas permanecem `snake_case`, e o contrato JSON da API é `camelCase` (tradução na borda, não via `underscored: true`). A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
+> **Atualização de 28/09/2026:** a convenção de naming mudou. Colunas, tabelas, rotas e payload usam a **mesma** nomenclatura — inglês snake_case (`name`, `user_id`, `recipe_id`). O payload usa o nome da coluna, sem camada de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. `Connection.sync()` não renomeia coluna nem tabela, então a alteração recria as tabelas — confirme que não há dado a preservar. A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
 
 ---
 
