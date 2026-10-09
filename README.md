@@ -2,9 +2,9 @@
 
 Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
 
-> **Status:** este documento descreve o **schema atual do backend**, com base nos models Sequelize existentes no projeto. Ele não representa, necessariamente, o modelo final previsto para as próximas etapas do Projeto Integrador.
+> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`). A API em `conloq/Back-End` usa o banco `mash`, criado por `Connection.sync()` a partir dos models (`Users`, `receitas` e `Temperatures`; a #71 padroniza para `users`, `recipes` e `temperatures`). As tabelas `lots` e `analyses` do depósito ainda não existem (#31 e #1).
 
-> **Atualização de 28/09/2026:** a convenção de naming mudou. Colunas, tabelas, rotas e payload usam a **mesma** nomenclatura — inglês snake_case (`name`, `user_id`, `recipe_id`). O payload usa o nome da coluna, sem camada de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. `Connection.sync()` não renomeia coluna nem tabela, então a alteração recria as tabelas — confirme que não há dado a preservar. A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
+> **Atualização de 08/10/2026:** tabelas e colunas usam inglês snake_case (`name`, `user_id`, `recipe_id`); o JSON da API usa inglês camelCase (`userId`, `recipeId`). Os models declaram os atributos em camelCase e a conexão do Sequelize usa `define: { underscored: true }`, que gera as colunas em snake_case sem código de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. `Connection.sync()` não renomeia coluna nem tabela, então a alteração recria as tabelas — confirme que não há dado a preservar. A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
 
 ---
 
@@ -272,7 +272,7 @@ USUARIO
 O arquivo principal do schema é:
 
 ```text
-mash_modelo_atual.sql
+mash.sql
 ```
 
 Ele contém:
@@ -299,7 +299,7 @@ Isso significa que ele **remove as tabelas existentes antes de recriá-las**.
 ## Pelo terminal
 
 ```bash
-mysql -u root -p < mash_modelo_atual.sql
+mysql -u root -p < mash.sql
 ```
 
 Como o próprio script cria e seleciona o banco `cervejaria`, não é necessário criá-lo manualmente antes da execução.
@@ -314,12 +314,12 @@ Também é possível utilizar:
 
 # Arquivos do banco
 
-Estrutura recomendada no repositório:
+Estrutura recomendada no repositório (hoje existem só `README.md` e `mash.sql`; a fonte Mermaid do MER está em `conloq/documentation`, em `database/diagrama_mer_mash.mmd`):
 
 ```text
 database/
 ├── README.md
-├── mash_modelo_atual.sql
+├── mash.sql
 ├── diagrama_mer_mash.png
 ├── diagrama_mer_mash.svg
 └── diagrama_mer_mash.mmd
@@ -352,12 +352,11 @@ O model atual de `iodos` armazena apenas:
 
 Para atender completamente ao fluxo de visão computacional previsto no Projeto Integrador, o banco deverá futuramente contemplar estruturas para registrar, quando essas funcionalidades forem implementadas:
 
-- lote de produção;
+- lote de produção (tabela `lots`, #31);
 - execução individual do teste;
 - imagem capturada;
 - data e hora da análise;
-- resultado `passou` / `não passou`;
-- nível de confiança da classificação;
+- estado da análise (`processing`, `completed`, `inconclusive` ou `failed`) e resultado em três classes (`STARCH_PRESENT`, `PARTIAL_CONVERSION` e `NO_DETECTABLE_STARCH`), conforme a #1;
 - histórico das análises.
 
 Essas estruturas **não fazem parte do schema atual** e não devem ser documentadas como implementadas antes de existirem no backend.
