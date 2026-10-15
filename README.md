@@ -1,4 +1,4 @@
-# Banco de Dados — MASH
+# Banco de Dados: MASH
 
 Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
 
@@ -151,7 +151,7 @@ No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
 | `createdAt` | `DATETIME` | Não | |
 | `updatedAt` | `DATETIME` | Não | |
 
-> No schema do app legado, `email` **ainda não possui** constraint `UNIQUE`; o model `Users` do Back-End já declara `unique: true` no Sequelize — a restrição será unificada na migração (#30).
+> No schema do app legado, `email` **ainda não possui** constraint `UNIQUE`; o model `Users` do Back-End já declara `unique: true` no Sequelize: a restrição será unificada na migração (#30).
 
 ---
 
@@ -387,5 +387,5 @@ Os itens abaixo refletem o estado atual dos models e podem ser tratados em evolu
 
 ---
 
-**Projeto Integrador — FATEC Registro**  
+**Projeto Integrador: FATEC Registro**  
 **Desenvolvimento de Software Multiplataforma**
