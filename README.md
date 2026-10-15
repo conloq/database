@@ -2,9 +2,9 @@
 
 Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
 
-> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`). A API em `conloq/Back-End` usa o banco `mash`, criado por `Connection.sync()` a partir dos models (`Users`, `receitas` e `Temperatures`; a #71 padroniza para `users`, `recipes` e `temperatures`). As tabelas `lots` e `analyses` do depósito ainda não existem (#31 e #1).
+> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`), mantido como registro. A API em `conloq/Back-End` usa o banco `mash`, criado pelas **migrations do Sequelize** (`npm run db:migrate`, decisão de 12/10/2026): `users`, `recipes` e `temperatures` hoje; `lots` e `analyses` entram pelo depósito (conloq/mash#31 e conloq/mash#1). O MER desse banco novo é a conloq/mash#87, feita depois que a conloq/mash#71 fechar os nomes finais.
 
-> **Atualização de 08/10/2026:** tabelas e colunas usam inglês snake_case (`name`, `user_id`, `recipe_id`); o JSON da API usa inglês camelCase (`userId`, `recipeId`). Os models declaram os atributos em camelCase e a conexão do Sequelize usa `define: { underscored: true }`, que gera as colunas em snake_case sem código de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. `Connection.sync()` não renomeia coluna nem tabela, então a alteração recria as tabelas — confirme que não há dado a preservar. A pasta `migrations/` do Back-End existe por decisão do time, mas seus arquivos não são executáveis atualmente e não são fonte de verdade. O runtime vigente é `Connection.sync()` no startup. Detalhes em [`conloq/documentation/database/README.md`](https://github.com/conloq/documentation/blob/main/database/README.md).
+> **Nomes no banco da API (decisão de 13/10/2026):** tabelas e colunas em inglês **camelCase**, com o mesmo nome do JSON (`userId`, `recipeId`, `urlImage`, `createdAt`), sem `underscored` e sem código de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. Substitui a regra de 08/10 (snake_case com `underscored: true`). O schema vem das migrations da pasta `migrations/` do Back-End; o `Connection.sync()` sai do startup pela conloq/mash#71. Detalhes em [`conloq/Back-End`](https://github.com/conloq/Back-End#readme), seção *Banco e migrations*.
 
 ---
 
@@ -47,9 +47,7 @@ Os models atuais não desativam os timestamps padrão do Sequelize. Por isso, as
 
 ### Observação sobre o Projeto Integrador
 
-O **recorte acadêmico atual** do Projeto Integrador está focado no **teste do iodo por visão computacional**.
-
-A tabela `temperaturas` permanece documentada porque existe no backend atual, mas não faz parte do foco acadêmico principal desta etapa.
+No depósito do PI (03/11/2026) entram o cadastro de receitas com as **rampas de temperatura**, os lotes e o **envio da imagem do teste de iodo** com a temperatura digitada pelo operador. A análise automática da imagem por visão computacional (OpenCV) fica para o próximo semestre (conloq/mash#34).
 
 ---
 
@@ -365,7 +363,7 @@ Essas estruturas **não fazem parte do schema atual** e não devem ser documenta
 
 # Boas práticas para evolução
 
-1. **Alterações de schema do Back-End devem ser acompanhadas de uma issue própria e teste em banco vazio** antes de serem aplicadas; ver também as decisões de 26/09 sobre migrations no Back-End.
+1. **Toda alteração de schema do Back-End entra por uma migration nova**, com issue própria e teste em banco vazio (`npm run db:migrate`) antes de ser aplicada; migration já aplicada no banco publicado não se edita (decisão de 12/10/2026).
 2. Não armazenar credenciais diretamente no código.
 3. Utilizar variáveis de ambiente para configuração do banco.
 4. Nunca armazenar senhas em texto puro.
@@ -385,8 +383,7 @@ Os itens abaixo refletem o estado atual dos models e podem ser tratados em evolu
 - `email` ainda não possui `UNIQUE` no app legado;
 - o nome `Historico_Logins` não segue o mesmo padrão de caixa das demais tabelas;
 - o arquivo de configuração local ainda deve ser migrado para variáveis de ambiente antes de uso fora do desenvolvimento;
-- `iodos` ainda não registra resultados reais das análises;
-- `temperaturas` permanece no backend, embora esteja fora do foco acadêmico principal desta etapa.
+- `iodos` ainda não registra resultados reais das análises; no banco da API, o registro da análise é a tabela `analyses` (conloq/mash#1), e a classificação automática fica para o próximo semestre.
 
 ---
 
