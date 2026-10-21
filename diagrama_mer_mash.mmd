@@ -1,6 +1,10 @@
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
+    users ||--o{ lots : possui
+    recipes ||--o{ lots : origina
+    recipes ||--o{ iodine_configs : configura
+    users ||--o{ login_history : registra
 
     users {
         INT id PK
@@ -29,10 +33,40 @@ erDiagram
         TIME initialization
         TIME ideal_time
         INT order_ramp
+        BOOLEAN active_temperature "adição ainda não aplicada à API"
         INT recipe_id FK
         DATETIME created_at
         DATETIME updated_at
     }
     SequelizeMeta {
         VARCHAR name PK
+    }
+    lots {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        INT recipe_id FK
+        DATETIME mash_start
+        ENUM status "active ou completed; default active"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    iodine_configs {
+        INT id PK
+        TIME first_collection_time
+        TIME test_interval
+        INT max_tests
+        INT recipe_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    login_history {
+        INT id PK
+        VARCHAR ip_address
+        DATETIME logged_at
+        VARCHAR location
+        BOOLEAN status "aceita NULL"
+        INT user_id FK
+        DATETIME created_at
+        DATETIME updated_at
     }
