@@ -1,0 +1,16 @@
+{
+  "verified": true,
+  "checkedAt": "2026-10-21T17:17:42.862Z",
+  "sourceCommit": "7f33203d06bd796c7840f13f1a445d082dbd7457",
+  "server": {
+    "version": "10.4.32-MariaDB",
+    "databaseName": "mash",
+    "lowerCaseTableNames": 0
+  },
+  "tableCount": 3,
+  "columnCount": 25,
+  "foreignKeyCount": 2,
+  "migrationCount": 3,
+  "differences": [],
+  "scope": "Tabelas, ordem/nomes/tipos/nulabilidade/defaults/PK/auto incremento das colunas, índices UNIQUE/FK, ações referenciais e nomes no SequelizeMeta; sem consulta a dados de negócio."
+}

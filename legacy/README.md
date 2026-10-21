@@ -1,0 +1,394 @@
+> Documento histórico do schema legado. Não descreve o banco atual da API nem o recorte vigente; consulte o [README atual](../README.md).
+
+# Banco de Dados: MASH
+
+Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
+
+> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`), mantido como registro. A API em `conloq/Back-End` usa o banco `mash`, criado pelas **migrations do Sequelize** (`npm run db:migrate`, decisão de 12/10/2026): `users`, `recipes` e `temperatures` hoje; `lots` e `analyses` entram pelo depósito (conloq/mash#31 e conloq/mash#1). O MER desse banco novo é a conloq/mash#87, feita depois que a conloq/mash#71 fechar os nomes finais.
+
+> **Nomes no banco da API (decisão de 08/10/2026, reafirmada em 15/10/2026):** tabelas e colunas em inglês **snake_case** (`user_id`, `recipe_id`, `url_image`, `created_at`); o JSON da API usa camelCase (`userId`, `recipeId`). Os models declaram os atributos em camelCase e a conexão do Sequelize usa `define: { underscored: true }`, que faz a ligação sem código de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. A regra de 13/10 (banco em camelCase) foi revertida. O schema vem das migrations da pasta `migrations/` do Back-End; o `Connection.sync()` sai do startup pela conloq/mash#71. Detalhes em [`conloq/Back-End`](https://github.com/conloq/Back-End#readme), seção *Nomes*.
+
+---
+
+## Tecnologias
+
+- **MySQL**
+- **Sequelize ORM**
+- **Node.js**
+
+A configuração local atual utiliza:
+
+```text
+Dialect: mysql
+Host: localhost
+Database: cervejaria
+Timezone: -03:00
+```
+
+> Credenciais de banco não devem ser mantidas no código em ambientes reais. Utilize variáveis de ambiente para usuário, senha, host e nome do banco.
+
+---
+
+## Escopo atual
+
+O banco possui cinco entidades principais:
+
+| Tabela | Finalidade |
+|---|---|
+| `usuarios` | Armazena os usuários do sistema |
+| `receitas` | Armazena as receitas cadastradas pelos usuários |
+| `iodos` | Armazena a configuração do teste de iodo associada a uma receita |
+| `temperaturas` | Armazena configurações de temperatura associadas a uma receita |
+| `Historico_Logins` | Armazena registros de acesso dos usuários |
+
+Os models atuais não desativam os timestamps padrão do Sequelize. Por isso, as tabelas também possuem:
+
+- `id`
+- `createdAt`
+- `updatedAt`
+
+### Observação sobre o Projeto Integrador
+
+No depósito do PI (03/11/2026) entram o cadastro de receitas com as **rampas de temperatura**, os lotes e o **envio da imagem do teste de iodo** com a temperatura digitada pelo operador. A análise automática da imagem por visão computacional (OpenCV) fica para o próximo semestre (conloq/mash#34).
+
+---
+
+# Diagrama MER
+
+O GitHub renderiza o diagrama abaixo automaticamente por meio de Mermaid.
+
+```mermaid
+erDiagram
+    USUARIOS ||--o{ RECEITAS : possui
+    USUARIOS ||--o{ HISTORICO_LOGINS : registra
+    RECEITAS ||--o{ IODOS : configura
+    RECEITAS ||--o{ TEMPERATURAS : configura
+
+    USUARIOS {
+        INT id PK
+        VARCHAR nome
+        VARCHAR email
+        VARCHAR telefone
+        VARCHAR senha
+        VARCHAR url_imagem
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    RECEITAS {
+        INT id PK
+        VARCHAR nome
+        INT usuario_id FK
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    IODOS {
+        INT id PK
+        TIME tempo_primeira_coleta
+        TIME intervalo_testes
+        INT qtd_max_testes
+        INT receita_id FK
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    TEMPERATURAS {
+        INT id PK
+        INT rampa_temperatura_minima
+        INT rampa_temperatura_maxima
+        INT temp_maxima_limite
+        INT temp_minima_limite
+        TIME temporizador
+        TIME inicializacao
+        TIME tempo_ideal
+        BOOLEAN temperatura_ativa
+        INT receita_id FK
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    HISTORICO_LOGINS {
+        INT id PK
+        VARCHAR endereco_ip
+        DATETIME data_hora
+        VARCHAR localidade
+        BOOLEAN status
+        INT usuario_id FK
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+```
+
+## Cardinalidades
+
+| Relacionamento | Cardinalidade | Regra |
+|---|---|---|
+| `usuarios` → `receitas` | `1 : 0..N` | Um usuário pode não possuir receitas ou possuir várias |
+| `usuarios` → `Historico_Logins` | `1 : 0..N` | Um usuário pode possuir zero ou vários registros de acesso |
+| `receitas` → `iodos` | `1 : 0..N` | Uma receita pode possuir zero ou vários registros de configuração do teste de iodo |
+| `receitas` → `temperaturas` | `1 : 0..N` | Uma receita pode possuir zero ou vários registros de temperatura |
+
+No lado filho, as chaves estrangeiras são obrigatórias. Portanto:
+
+- cada `receita` pertence a exatamente um `usuario`;
+- cada registro de `iodo` pertence a exatamente uma `receita`;
+- cada registro de `temperatura` pertence a exatamente uma `receita`;
+- cada registro de `Historico_Logins` pertence a exatamente um `usuario`.
+
+---
+
+# Estrutura das tabelas
+
+## `usuarios`
+
+| Campo | Tipo | Nulo | Chave |
+|---|---|---:|---|
+| `id` | `INT` | Não | PK |
+| `nome` | `VARCHAR(255)` | Não | |
+| `email` | `VARCHAR(255)` | Não | |
+| `telefone` | `VARCHAR(255)` | Sim | |
+| `senha` | `VARCHAR(255)` | Não | |
+| `url_imagem` | `VARCHAR(255)` | Sim | |
+| `createdAt` | `DATETIME` | Não | |
+| `updatedAt` | `DATETIME` | Não | |
+
+> No schema do app legado, `email` **ainda não possui** constraint `UNIQUE`; o model `Users` do Back-End já declara `unique: true` no Sequelize: a restrição será unificada na migração (#30).
+
+---
+
+## `receitas`
+
+| Campo | Tipo | Nulo | Chave / referência |
+|---|---|---:|---|
+| `id` | `INT` | Não | PK |
+| `nome` | `VARCHAR(255)` | Não | |
+| `usuario_id` | `INT` | Não | FK → `usuarios.id` |
+| `createdAt` | `DATETIME` | Não | |
+| `updatedAt` | `DATETIME` | Não | |
+
+A relação `receitas.usuario_id → usuarios.id` **não possui `ON DELETE CASCADE`** definido no model atual.
+
+---
+
+## `iodos`
+
+| Campo | Tipo | Nulo | Chave / referência |
+|---|---|---:|---|
+| `id` | `INT` | Não | PK |
+| `tempo_primeira_coleta` | `TIME` | Não | |
+| `intervalo_testes` | `TIME` | Não | |
+| `qtd_max_testes` | `INT` | Não | |
+| `receita_id` | `INT` | Não | FK → `receitas.id` |
+| `createdAt` | `DATETIME` | Não | |
+| `updatedAt` | `DATETIME` | Não | |
+
+Ao excluir uma receita, seus registros relacionados de iodo são removidos por `ON DELETE CASCADE`.
+
+> Atualmente esta tabela representa **configuração do teste de iodo**, e não a execução ou o resultado da análise por visão computacional.
+
+---
+
+## `temperaturas`
+
+| Campo | Tipo | Nulo | Chave / referência |
+|---|---|---:|---|
+| `id` | `INT` | Não | PK |
+| `rampa_temperatura_minima` | `INT` | Não | |
+| `rampa_temperatura_maxima` | `INT` | Não | |
+| `temp_maxima_limite` | `INT` | Não | |
+| `temp_minima_limite` | `INT` | Não | |
+| `temporizador` | `TIME` | Não | |
+| `inicializacao` | `TIME` | Não | |
+| `tempo_ideal` | `TIME` | Não | |
+| `temperatura_ativa` | `BOOLEAN` | Não | |
+| `receita_id` | `INT` | Não | FK → `receitas.id` |
+| `createdAt` | `DATETIME` | Não | |
+| `updatedAt` | `DATETIME` | Não | |
+
+`temperatura_ativa` utiliza `false` como valor padrão.
+
+Ao excluir uma receita, seus registros relacionados de temperatura são removidos por `ON DELETE CASCADE`.
+
+---
+
+## `Historico_Logins`
+
+| Campo | Tipo | Nulo | Chave / referência |
+|---|---|---:|---|
+| `id` | `INT` | Não | PK |
+| `endereco_ip` | `VARCHAR(255)` | Não | |
+| `data_hora` | `DATETIME` | Não | |
+| `localidade` | `VARCHAR(255)` | Não | |
+| `status` | `BOOLEAN` | Sim | |
+| `usuario_id` | `INT` | Não | FK → `usuarios.id` |
+| `createdAt` | `DATETIME` | Não | |
+| `updatedAt` | `DATETIME` | Não | |
+
+`data_hora` utiliza a data e hora atuais como valor padrão.
+
+Ao excluir um usuário, seus registros de histórico de login são removidos por `ON DELETE CASCADE`.
+
+> O nome `Historico_Logins` segue a pluralização esperada do model `Historico_Login`. Como nomes de tabela podem apresentar diferenças de sensibilidade a maiúsculas e minúsculas entre ambientes MySQL, recomenda-se padronizar nomes em minúsculas em uma futura evolução do schema.
+
+---
+
+# Integridade referencial
+
+As relações atuais são:
+
+```text
+receitas.usuario_id
+    → usuarios.id
+
+iodos.receita_id
+    → receitas.id
+
+temperaturas.receita_id
+    → receitas.id
+
+Historico_Logins.usuario_id
+    → usuarios.id
+```
+
+Resumo:
+
+```text
+USUARIO
+   │
+   ├── 1 : 0..N ── RECEITA
+   │                  │
+   │                  ├── 1 : 0..N ── IODO
+   │                  │
+   │                  └── 1 : 0..N ── TEMPERATURA
+   │
+   └── 1 : 0..N ── HISTORICO_LOGIN
+```
+
+---
+
+# Script SQL
+
+O arquivo principal do schema é:
+
+```text
+mash.sql
+```
+
+Ele contém:
+
+- criação do banco `cervejaria`;
+- criação das tabelas;
+- chaves primárias;
+- chaves estrangeiras;
+- índices das relações;
+- regras de exclusão em cascata existentes nos models.
+
+## Atenção: script destrutivo
+
+O script atual contém comandos `DROP TABLE IF EXISTS`.
+
+Isso significa que ele **remove as tabelas existentes antes de recriá-las**.
+
+> Utilize o script somente em ambiente local, acadêmico, de desenvolvimento ou em uma base descartável. Não execute diretamente em produção ou em um banco que contenha dados que precisam ser preservados.
+
+---
+
+# Executando localmente
+
+## Pelo terminal
+
+```bash
+mysql -u root -p < mash.sql
+```
+
+Como o próprio script cria e seleciona o banco `cervejaria`, não é necessário criá-lo manualmente antes da execução.
+
+Também é possível utilizar:
+
+- MySQL Workbench
+- DBeaver
+- DataGrip
+
+---
+
+# Arquivos do banco
+
+Estrutura recomendada no repositório (hoje existem só `README.md` e `mash.sql`; a fonte Mermaid do MER está em `conloq/documentation`, em `database/diagrama_mer_mash.mmd`):
+
+```text
+database/
+├── README.md
+├── mash.sql
+├── diagrama_mer_mash.png
+├── diagrama_mer_mash.svg
+└── diagrama_mer_mash.mmd
+```
+
+## Arquivos do MER
+
+| Arquivo | Finalidade |
+|---|---|
+| `diagrama_mer_mash.png` | Visualização rápida |
+| `diagrama_mer_mash.svg` | Versão vetorial |
+| `diagrama_mer_mash.mmd` | Fonte editável em Mermaid |
+
+A versão PNG também pode ser exibida no README:
+
+```md
+![Diagrama MER](./diagrama_mer_mash.png)
+```
+
+---
+
+# Evolução prevista para o teste do iodo
+
+O model atual de `iodos` armazena apenas:
+
+- tempo da primeira coleta;
+- intervalo entre testes;
+- quantidade máxima de testes;
+- receita associada.
+
+Para atender completamente ao fluxo de visão computacional previsto no Projeto Integrador, o banco deverá futuramente contemplar estruturas para registrar, quando essas funcionalidades forem implementadas:
+
+- lote de produção (tabela `lots`, #31);
+- execução individual do teste;
+- imagem capturada;
+- data e hora da análise;
+- estado da análise (`processing`, `completed`, `inconclusive` ou `failed`) e resultado em três classes (`STARCH_PRESENT`, `PARTIAL_CONVERSION` e `NO_DETECTABLE_STARCH`), conforme a #1;
+- histórico das análises.
+
+Essas estruturas **não fazem parte do schema atual** e não devem ser documentadas como implementadas antes de existirem no backend.
+
+---
+
+# Boas práticas para evolução
+
+1. **Toda alteração de schema do Back-End entra por uma migration nova**, com issue própria e teste em banco vazio (`npm run db:migrate`) antes de ser aplicada; migration já aplicada no banco publicado não se edita (decisão de 12/10/2026).
+2. Não armazenar credenciais diretamente no código.
+3. Utilizar variáveis de ambiente para configuração do banco.
+4. Nunca armazenar senhas em texto puro.
+5. Utilizar hash seguro para senhas.
+6. Manter índices nas chaves estrangeiras.
+7. Aplicar validações tanto no banco quanto na aplicação.
+8. Atualizar o MER e este README sempre que o schema for alterado.
+9. Evitar alterações manuais diretamente no banco de produção.
+10. Criar backup antes de qualquer migration destrutiva.
+
+---
+
+# Pontos de atenção do schema atual
+
+Os itens abaixo refletem o estado atual dos models e podem ser tratados em evoluções futuras:
+
+- `email` ainda não possui `UNIQUE` no app legado;
+- o nome `Historico_Logins` não segue o mesmo padrão de caixa das demais tabelas;
+- o arquivo de configuração local ainda deve ser migrado para variáveis de ambiente antes de uso fora do desenvolvimento;
+- `iodos` ainda não registra resultados reais das análises; no banco da API, o registro da análise é a tabela `analyses` (conloq/mash#1), e a classificação automática fica para o próximo semestre.
+
+---
+
+**Projeto Integrador: FATEC Registro**  
+**Desenvolvimento de Software Multiplataforma**
+
