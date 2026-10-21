@@ -18,12 +18,18 @@ A fonte do schema da API são as [migrations do Back-End](https://github.com/con
 
 MariaDB é a versão observada no ambiente local. A configuração da aplicação usa o dialeto `mysql`; a implantação planejada com MySQL externo deve ser conferida separadamente. Esta evidência não comprova o banco publicado.
 
-## Entidades e relacionamentos
+## Entidades e relacionamentos do modelo atualizado
+
+O modelo de referência reúne `users`, `recipes`, `temperatures`, `lots`, `iodine_configs` e `login_history`, além de `SequelizeMeta`. As três últimas tabelas de negócio e `temperatures.active_temperature` são as adições do `schema-complementar.sql`, ainda não aplicadas à API. A tabela de ambiente acima e as evidências descrevem somente o banco observado antes dessas adições.
 
 ```mermaid
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
+    users ||--o{ lots : possui
+    recipes ||--o{ lots : origina
+    recipes ||--o{ iodine_configs : configura
+    users ||--o{ login_history : registra
 
     users {
         INT id PK
@@ -52,6 +58,7 @@ erDiagram
         TIME initialization
         TIME ideal_time
         INT order_ramp
+        BOOLEAN active_temperature "adição ainda não aplicada à API"
         INT recipe_id FK
         DATETIME created_at
         DATETIME updated_at
@@ -59,14 +66,46 @@ erDiagram
     SequelizeMeta {
         VARCHAR name PK
     }
+    lots {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        INT recipe_id FK
+        DATETIME mash_start
+        ENUM status "active ou completed; default active"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    iodine_configs {
+        INT id PK
+        TIME first_collection_time
+        TIME test_interval
+        INT max_tests
+        INT recipe_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    login_history {
+        INT id PK
+        VARCHAR ip_address
+        DATETIME logged_at
+        VARCHAR location
+        BOOLEAN status "aceita NULL"
+        INT user_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
 ```
 
 - Cada receita pertence a um usuário, por `recipes.user_id`, obrigatório.
 - Cada rampa pertence a uma receita, por `temperatures.recipe_id`, obrigatório.
 - As duas FKs têm `ON DELETE CASCADE` e `ON UPDATE CASCADE` no banco observado.
+- No complemento, cada lote pertence a um usuário e a uma receita; configurações de iodo pertencem a receitas e registros de login pertencem a usuários.
 - `SequelizeMeta` é administrativa e não tem FK com as entidades de negócio.
 
-## Colunas físicas
+## Colunas físicas do modelo atualizado
+
+As tabelas originais abaixo mostram os tipos observados; adições do complemento estão identificadas separadamente.
 
 JSON e atributos dos models usam camelCase; tabelas e colunas físicas usam snake_case, com `define: { underscored: true }`. Exemplos: `urlImage → url_image`, `userId → user_id`, `recipeId → recipe_id`, `orderRamp → order_ramp` e `createdAt → created_at`.
 
@@ -106,11 +145,50 @@ JSON e atributos dos models usam camelCase; tabelas e colunas físicas usam snak
 | `initialization` | `time` | Não | - |
 | `ideal_time` | `time` | Não | - |
 | `order_ramp` | `int(11)` | Sim | - |
+| `active_temperature` | `boolean` | Não | Adição do complemento, ainda não aplicada; default FALSE |
 | `recipe_id` | `int(11)` | Não | FK → recipes.id |
 | `created_at` | `datetime` | Não | default current_timestamp() |
 | `updated_at` | `datetime` | Não | default current_timestamp() |
 
 `users.email` possui índice único. O banco não tem UNIQUE composto em `recipes(user_id, name)`; a regra de nome de receita por usuário pertence à aplicação. `updated_at` é mantido pelo Sequelize nas operações da aplicação, sem cláusula `ON UPDATE` no DDL observado.
+
+### `lots` (complemento, ainda não aplicado)
+
+| Coluna | Tipo de referência | Aceita NULL | Chave / default |
+|---|---|---|---|
+| `id` | `int` | Não | PK, auto incremento |
+| `name` | `varchar(255)` | Não | - |
+| `user_id` | `int` | Não | FK → users.id |
+| `recipe_id` | `int` | Não | FK → recipes.id |
+| `mash_start` | `datetime` | Não | default CURRENT_TIMESTAMP |
+| `status` | `enum('active', 'completed')` | Não | default active |
+| `created_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+| `updated_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+
+### `iodine_configs` (complemento, ainda não aplicado)
+
+| Coluna | Tipo de referência | Aceita NULL | Chave / default |
+|---|---|---|---|
+| `id` | `int` | Não | PK, auto incremento |
+| `first_collection_time` | `time` | Não | - |
+| `test_interval` | `time` | Não | - |
+| `max_tests` | `int` | Não | - |
+| `recipe_id` | `int` | Não | FK → recipes.id |
+| `created_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+| `updated_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+
+### `login_history` (complemento, ainda não aplicado)
+
+| Coluna | Tipo de referência | Aceita NULL | Chave / default |
+|---|---|---|---|
+| `id` | `int` | Não | PK, auto incremento |
+| `ip_address` | `varchar(255)` | Não | - |
+| `logged_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+| `location` | `varchar(255)` | Não | - |
+| `status` | `boolean` | Sim | - |
+| `user_id` | `int` | Não | FK → users.id |
+| `created_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
+| `updated_at` | `datetime` | Não | default CURRENT_TIMESTAMP |
 
 ## Como criar e evoluir o schema
 
@@ -154,7 +232,7 @@ Adicionar a referência de `iodine_configs` não antecipa o fluxo real de iodo: 
 | Arquivo | Papel |
 |---|---|
 | `schema-api.sql` | DDL de referência obtido de SHOW CREATE TABLE do banco local; sem dados e sem DROP; não substitui migrations nem deve ser importado no banco de trabalho |
-| `diagrama_mer_mash.mmd` | Fonte Mermaid do schema atual, também renderizada neste README |
+| `diagrama_mer_mash.mmd` | Modelo atualizado completo, com adições ainda não aplicadas à API; renderizado neste README |
 | `schema-complementar.sql` | Adições solicitadas: active_temperature, lotes, configuração de iodo e histórico de login; referência ainda não aplicada à API |
 | `diagrama_mer_complementar.mmd` | Adições e relacionamentos do complemento; entidades existentes abreviadas |
 | `evidencias/` | Metadados, resultado da comparação e consultas de leitura para reprodução |
