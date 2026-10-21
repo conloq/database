@@ -1,0 +1,389 @@
+{
+  "verified": true,
+  "readOnly": true,
+  "checkedAt": "2026-10-21T17:17:42.862Z",
+  "server": [
+    {
+      "version": "10.4.32-MariaDB",
+      "databaseName": "mash",
+      "lowerCaseTableNames": 0
+    }
+  ],
+  "tables": [
+    {
+      "TABLE_NAME": "recipes",
+      "ENGINE": "InnoDB",
+      "TABLE_COLLATION": "utf8mb4_general_ci"
+    },
+    {
+      "TABLE_NAME": "SequelizeMeta",
+      "ENGINE": "InnoDB",
+      "TABLE_COLLATION": "utf8_unicode_ci"
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "ENGINE": "InnoDB",
+      "TABLE_COLLATION": "utf8mb4_general_ci"
+    },
+    {
+      "TABLE_NAME": "users",
+      "ENGINE": "InnoDB",
+      "TABLE_COLLATION": "utf8mb4_general_ci"
+    }
+  ],
+  "columns": [
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "id",
+      "ORDINAL_POSITION": 1,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "PRI",
+      "EXTRA": "auto_increment"
+    },
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "name",
+      "ORDINAL_POSITION": 2,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "user_id",
+      "ORDINAL_POSITION": 3,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "MUL",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "created_at",
+      "ORDINAL_POSITION": 4,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "updated_at",
+      "ORDINAL_POSITION": 5,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "SequelizeMeta",
+      "COLUMN_NAME": "name",
+      "ORDINAL_POSITION": 1,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "PRI",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "id",
+      "ORDINAL_POSITION": 1,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "PRI",
+      "EXTRA": "auto_increment"
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "max_temperature_ramp",
+      "ORDINAL_POSITION": 2,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "min_temperature_ramp",
+      "ORDINAL_POSITION": 3,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "max_temperature_limit",
+      "ORDINAL_POSITION": 4,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "min_temperature_limit",
+      "ORDINAL_POSITION": 5,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "timer",
+      "ORDINAL_POSITION": 6,
+      "COLUMN_TYPE": "time",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "initialization",
+      "ORDINAL_POSITION": 7,
+      "COLUMN_TYPE": "time",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "ideal_time",
+      "ORDINAL_POSITION": 8,
+      "COLUMN_TYPE": "time",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "order_ramp",
+      "ORDINAL_POSITION": 9,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": "NULL",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "recipe_id",
+      "ORDINAL_POSITION": 10,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "MUL",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "created_at",
+      "ORDINAL_POSITION": 11,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "updated_at",
+      "ORDINAL_POSITION": 12,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "id",
+      "ORDINAL_POSITION": 1,
+      "COLUMN_TYPE": "int(11)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "PRI",
+      "EXTRA": "auto_increment"
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "name",
+      "ORDINAL_POSITION": 2,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "email",
+      "ORDINAL_POSITION": 3,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "UNI",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "phone",
+      "ORDINAL_POSITION": 4,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": "NULL",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "password",
+      "ORDINAL_POSITION": 5,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null,
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "url_image",
+      "ORDINAL_POSITION": 6,
+      "COLUMN_TYPE": "varchar(255)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": "NULL",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "created_at",
+      "ORDINAL_POSITION": 7,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    },
+    {
+      "TABLE_NAME": "users",
+      "COLUMN_NAME": "updated_at",
+      "ORDINAL_POSITION": 8,
+      "COLUMN_TYPE": "datetime",
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": "current_timestamp()",
+      "COLUMN_KEY": "",
+      "EXTRA": ""
+    }
+  ],
+  "indexes": [
+    {
+      "TABLE_NAME": "recipes",
+      "INDEX_NAME": "PRIMARY",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "id"
+    },
+    {
+      "TABLE_NAME": "recipes",
+      "INDEX_NAME": "user_id",
+      "NON_UNIQUE": 1,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "user_id"
+    },
+    {
+      "TABLE_NAME": "SequelizeMeta",
+      "INDEX_NAME": "name",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "name"
+    },
+    {
+      "TABLE_NAME": "SequelizeMeta",
+      "INDEX_NAME": "PRIMARY",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "name"
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "INDEX_NAME": "PRIMARY",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "id"
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "INDEX_NAME": "recipe_id",
+      "NON_UNIQUE": 1,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "recipe_id"
+    },
+    {
+      "TABLE_NAME": "users",
+      "INDEX_NAME": "email",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "email"
+    },
+    {
+      "TABLE_NAME": "users",
+      "INDEX_NAME": "PRIMARY",
+      "NON_UNIQUE": 0,
+      "SEQ_IN_INDEX": 1,
+      "COLUMN_NAME": "id"
+    }
+  ],
+  "foreignKeys": [
+    {
+      "TABLE_NAME": "recipes",
+      "COLUMN_NAME": "user_id",
+      "REFERENCED_TABLE_NAME": "users",
+      "REFERENCED_COLUMN_NAME": "id",
+      "DELETE_RULE": "CASCADE",
+      "UPDATE_RULE": "CASCADE"
+    },
+    {
+      "TABLE_NAME": "temperatures",
+      "COLUMN_NAME": "recipe_id",
+      "REFERENCED_TABLE_NAME": "recipes",
+      "REFERENCED_COLUMN_NAME": "id",
+      "DELETE_RULE": "CASCADE",
+      "UPDATE_RULE": "CASCADE"
+    }
+  ],
+  "migrations": [
+    {
+      "name": "20260924230748-criar-tabela-user.js"
+    },
+    {
+      "name": "20260924230749-criar-tabela-recipe.js"
+    },
+    {
+      "name": "20260924230750-criar-tabela-temperature.js"
+    }
+  ],
+  "createTables": {
+    "recipes": "CREATE TABLE `recipes` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `user_id` int(11) NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT current_timestamp(),\n  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  KEY `user_id` (`user_id`),\n  CONSTRAINT `recipes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+    "SequelizeMeta": "CREATE TABLE `SequelizeMeta` (\n  `name` varchar(255) NOT NULL,\n  PRIMARY KEY (`name`),\n  UNIQUE KEY `name` (`name`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
+    "temperatures": "CREATE TABLE `temperatures` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `max_temperature_ramp` int(11) NOT NULL,\n  `min_temperature_ramp` int(11) NOT NULL,\n  `max_temperature_limit` int(11) NOT NULL,\n  `min_temperature_limit` int(11) NOT NULL,\n  `timer` time NOT NULL,\n  `initialization` time NOT NULL,\n  `ideal_time` time NOT NULL,\n  `order_ramp` int(11) DEFAULT NULL,\n  `recipe_id` int(11) NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT current_timestamp(),\n  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  KEY `recipe_id` (`recipe_id`),\n  CONSTRAINT `temperatures_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+    "users": "CREATE TABLE `users` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `email` varchar(255) NOT NULL,\n  `phone` varchar(255) DEFAULT NULL,\n  `password` varchar(255) NOT NULL,\n  `url_image` varchar(255) DEFAULT NULL,\n  `created_at` datetime NOT NULL DEFAULT current_timestamp(),\n  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `email` (`email`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci"
+  }
+}

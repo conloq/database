@@ -1,6 +1,6 @@
 -- ============================================================
 -- MASH / Projeto Integrador
--- Banco de dados atual do backend
+-- Schema HISTÓRICO do app legado cervejaria; NÃO é o banco atual da API
 --
 -- Gerado a partir dos models Sequelize:
 --   Usuario.js
@@ -181,3 +181,4 @@ CREATE TABLE `Historico_Logins` (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+

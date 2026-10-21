@@ -1,0 +1,38 @@
+erDiagram
+    users ||--o{ recipes : possui
+    recipes ||--o{ temperatures : possui
+
+    users {
+        INT id PK
+        VARCHAR name
+        VARCHAR email UK
+        VARCHAR phone
+        VARCHAR password
+        VARCHAR url_image
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    recipes {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    temperatures {
+        INT id PK
+        INT max_temperature_ramp
+        INT min_temperature_ramp
+        INT max_temperature_limit
+        INT min_temperature_limit
+        TIME timer
+        TIME initialization
+        TIME ideal_time
+        INT order_ramp
+        INT recipe_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    SequelizeMeta {
+        VARCHAR name PK
+    }
