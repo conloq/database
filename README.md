@@ -132,12 +132,31 @@ Os testes de schema que criam dados ou fazem rollback devem usar banco descartá
 - Teste de iodo: somente simulação no frontend neste semestre, com cena obrigatória no pitch. Não há tabela de análise, upload real, histórico real ou OpenCV exigidos para o depósito; ficam no backlog do próximo semestre, conforme [#66](https://github.com/conloq/mash/issues/66).
 - Sensores, leituras IoT, reprocessamento e avaliações são futuros; não aparecem no MER como implementados.
 
+## Complemento de schema solicitado em 21/10/2026
+
+Por solicitação do Haimon, somente neste repositório, o [SQL complementar](schema-complementar.sql) acrescenta as estruturas abaixo à base descrita em `schema-api.sql`. São definições de referência: não foram aplicadas ao banco de trabalho nem implementadas nos models ou migrations do Back-End. As evidências anteriores continuam descrevendo apenas o schema observado. O [diagrama complementar](diagrama_mer_complementar.mmd) mostra as adições e seus vínculos, abreviando as entidades existentes.
+
+| Adição | Origem e campos |
+|---|---|
+| `temperatures.active_temperature` | Equivalente de `temperaturas.temperatura_ativa`: BOOLEAN obrigatório, default FALSE; preserva `order_ramp`. Não impõe unicidade de rampa ativa por receita, assim como o legado |
+| `lots` | Contrato da [#31](https://github.com/conloq/mash/issues/31): `id`, `name`, `user_id`, `recipe_id`, `mash_start`, `status`, `created_at`, `updated_at`; status `active`/`completed`, default `active` |
+| `iodine_configs` | Equivalente de `iodos`: `tempo_primeira_coleta → first_collection_time`, `intervalo_testes → test_interval`, `qtd_max_testes → max_tests`, `receita_id → recipe_id`, além de id e timestamps |
+| `login_history` | Equivalente de `Historico_Logins`: `endereco_ip → ip_address`, `data_hora → logged_at`, `localidade → location`, `status`, `usuario_id → user_id`, além de id e timestamps; status continua anulável |
+
+As colunas novas seguem inglês e snake_case. As tabelas novas usam InnoDB e `utf8mb4_general_ci`. O SQL preserva a exclusão em cascata dos vínculos legados de configuração e histórico; para lotes, usa RESTRICT na exclusão de usuário/receita para preservar os registros. O vínculo entre lote e receita do mesmo usuário precisa de validação na futura API. Os timestamps seguem o padrão atual: default de cadastro; atualização de `updated_at` pela aplicação, sem `ON UPDATE` automático.
+
+Para validar o DDL, usar banco vazio descartável: primeiro `schema-api.sql`, depois `schema-complementar.sql`, uma única vez. O complemento não tem DROP, não copia dados legados e não deve ser aplicado manualmente ao banco da API. A adoção pela aplicação exige novas migrations e alinhamento dos models, em trabalho separado.
+
+Adicionar a referência de `iodine_configs` não antecipa o fluxo real de iodo: neste semestre continua somente a simulação frontend e sua cena obrigatória no pitch. Imagens, resultados de análise, OpenCV e demais funcionalidades futuras não foram acrescentados a este complemento.
+
 ## Arquivos
 
 | Arquivo | Papel |
 |---|---|
 | `schema-api.sql` | DDL de referência obtido de SHOW CREATE TABLE do banco local; sem dados e sem DROP; não substitui migrations nem deve ser importado no banco de trabalho |
 | `diagrama_mer_mash.mmd` | Fonte Mermaid do schema atual, também renderizada neste README |
+| `schema-complementar.sql` | Adições solicitadas: active_temperature, lotes, configuração de iodo e histórico de login; referência ainda não aplicada à API |
+| `diagrama_mer_complementar.mmd` | Adições e relacionamentos do complemento; entidades existentes abreviadas |
 | `evidencias/` | Metadados, resultado da comparação e consultas de leitura para reprodução |
 | `mash.sql` | Script histórico do app legado `cervejaria`; contém DROP e não corresponde à API atual |
 | `legacy/README.md` | Documentação anterior, preservada como histórico |
