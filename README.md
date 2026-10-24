@@ -1,6 +1,6 @@
 # Banco de Dados: Mash
 
-A fonte do schema da API são as [migrations do Back-End](https://github.com/conloq/Back-End/tree/7f33203d06bd796c7840f13f1a445d082dbd7457/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde a essas migrations nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
+A fonte do schema da API são as [migrations do Back-End na revisão atual](https://github.com/conloq/Back-End/tree/b65ca029b242052c89f38437d61ce9c5cf697a59/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde às migrations da revisão então examinada nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
 
 ## Banco atual e ambiente conferido
 
@@ -17,6 +17,10 @@ A fonte do schema da API são as [migrations do Back-End](https://github.com/con
 | Código comparado | Back-End `7f33203d06bd796c7840f13f1a445d082dbd7457` |
 
 MariaDB é a versão observada no ambiente local. A configuração da aplicação usa o dialeto `mysql`; a implantação planejada com MySQL externo deve ser conferida separadamente. Esta evidência não comprova o banco publicado.
+
+### Atualização da fonte em 24/10/2026
+
+A `main` atual do Back-End é `b65ca029b242052c89f38437d61ce9c5cf697a59`. A comparação com a revisão examinada na evidência de 21/10 (`7f33203d06bd796c7840f13f1a445d082dbd7457`) mostra apenas formatação diferente nas três migrations, sem mudança de schema. A referência `schema-api.sql` continua correspondente às migrations atuais. Elas criam somente `users`, `recipes` e `temperatures`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O diagrama completo abaixo também registra estruturas complementares planejadas; não representa todas como aplicadas à API.
 
 ## Entidades e relacionamentos do modelo atualizado
 
