@@ -1,5 +1,5 @@
 %% Estruturas planejadas; não criadas pelas migrations atuais da main do Back-End.
-%% users e recipes aparecem aqui apenas como referências às tabelas do MER implementado.
+%% users, recipes e temperatures aparecem como referências às tabelas do MER implementado.
 erDiagram
     users ||--o{ lots : planejado
     recipes ||--o{ lots : planejado
@@ -13,6 +13,10 @@ erDiagram
     }
     recipes {
         INT id PK
+    }
+    temperatures {
+        INT id PK
+        BOOLEAN active_temperature "planejado; ausente das migrations atuais"
     }
     lots {
         INT id PK

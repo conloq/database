@@ -68,7 +68,7 @@ Cada receita pertence a um usuário e cada rampa pertence a uma receita. As duas
 
 ## Entidades planejadas, ainda sem migrations na `main`
 
-O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas. `lots` depende da #31; `analyses` permanece no recorte do próximo semestre. `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `telemetry_iot` e `registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
+O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas e a adição `temperatures.active_temperature`. `lots` depende da #31; `analyses` permanece no recorte do próximo semestre. `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `Telemetria_IOT` e `Registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
 
 ## Colunas físicas do modelo atualizado
 
