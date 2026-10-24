@@ -1,0 +1,62 @@
+%% Estruturas planejadas; não criadas pelas migrations atuais da main do Back-End.
+%% users, recipes e temperatures aparecem como referências às tabelas do MER implementado.
+erDiagram
+    users ||--o{ lots : planejado
+    recipes ||--o{ lots : planejado
+    recipes ||--o{ iodine_configs : planejado
+    users ||--o{ login_history : planejado
+    lots ||--o{ analyses : planejado
+    users ||--o{ analyses : planejado
+
+    users {
+        INT id PK
+    }
+    recipes {
+        INT id PK
+    }
+    temperatures {
+        INT id PK
+        BOOLEAN active_temperature "planejado; ausente das migrations atuais"
+    }
+    lots {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        INT recipe_id FK
+        DATETIME mash_start
+        ENUM status "active ou completed"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    analyses {
+        INT id PK
+        INT lot_id FK
+        INT user_id FK
+        VARCHAR status
+        VARCHAR result "nullable"
+        DATETIME collected_at
+        DECIMAL collected_temperature "nullable"
+        VARCHAR measurement_source
+        VARCHAR image_key
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    iodine_configs {
+        INT id PK
+        TIME first_collection_time
+        TIME test_interval
+        INT max_tests
+        INT recipe_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    login_history {
+        INT id PK
+        VARCHAR ip_address
+        DATETIME logged_at
+        VARCHAR location
+        BOOLEAN status "nullable"
+        INT user_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
