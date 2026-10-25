@@ -1,6 +1,6 @@
 # Banco de Dados: Mash
 
-A fonte do schema da API são as [migrations do Back-End na revisão atual](https://github.com/conloq/Back-End/tree/b65ca029b242052c89f38437d61ce9c5cf697a59/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde às migrations da revisão então examinada nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
+A fonte do schema da API são as [migrations do Back-End na revisão atual](https://github.com/conloq/Back-End/tree/9007fe6ffd4836ab8571dc8c6f44a17b6dc8d8a5/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde às migrations da revisão então examinada nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
 
 ## Banco atual e ambiente conferido
 
@@ -9,7 +9,8 @@ A fonte do schema da API são as [migrations do Back-End na revisão atual](http
 | Servidor local | MariaDB 10.4.32, acessado pelo dialeto MySQL do Sequelize |
 | Banco | `mash` |
 | Tabelas de negócio | `users`, `recipes`, `temperatures` |
-| Controle de migrations | `SequelizeMeta`, com três migrations registradas |
+| Tabela de infraestrutura | `sessions`, armazenamento de sessão da aplicação |
+| Controle de migrations | `SequelizeMeta`, com quatro migrations registradas |
 | Engine | InnoDB |
 | Collation das tabelas de negócio | `utf8mb4_general_ci` |
 | Collation de `SequelizeMeta` | `utf8_unicode_ci` |
@@ -18,13 +19,15 @@ A fonte do schema da API são as [migrations do Back-End na revisão atual](http
 
 MariaDB é a versão observada no ambiente local. A configuração da aplicação usa o dialeto `mysql`; a implantação planejada com MySQL externo deve ser conferida separadamente. Esta evidência não comprova o banco publicado.
 
-### Atualização da fonte em 24/10/2026
+### Atualização da fonte em 25/10/2026
 
-A `main` atual do Back-End é `b65ca029b242052c89f38437d61ce9c5cf697a59`. A comparação com a revisão examinada na evidência de 21/10 (`7f33203d06bd796c7840f13f1a445d082dbd7457`) mostra apenas formatação diferente nas três migrations, sem mudança de schema. A referência `schema-api.sql` continua correspondente às migrations atuais. Elas criam somente `users`, `recipes` e `temperatures`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O MER implementado e o modelo planejado estão em diagramas separados.
+A `main` atual do Back-End é `9007fe6ffd4836ab8571dc8c6f44a17b6dc8d8a5`. A comparação com a revisão examinada na evidência de 21/10 (`7f33203d06bd796c7840f13f1a445d082dbd7457`) mostra, além de formatação, uma migration a mais: a de `sessions`, criada em 24/10 para o armazenamento de sessão da aplicação. As quatro migrations criam `users`, `recipes`, `temperatures` e `sessions`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O MER implementado e o modelo planejado estão em diagramas separados.
+
+O despejo `schema-api.sql` e os arquivos de `evidencias/` são observações de 21/10 e precedem a migration de `sessions`; por isso continuam descrevendo o banco com três tabelas de negócio. As colunas de `sessions` aqui vêm da definição da migration, não de uma consulta ao banco.
 
 ## Entidades implementadas nas migrations atuais
 
-O arquivo [`diagrama_mer_mash.mmd`](diagrama_mer_mash.mmd) contém somente as três tabelas da API. `SequelizeMeta` foi omitida por ser tabela administrativa do Sequelize, não parte do MER de negócio.
+O arquivo [`diagrama_mer_mash.mmd`](diagrama_mer_mash.mmd) contém as três tabelas de negócio da API e a tabela de infraestrutura `sessions`. `SequelizeMeta` foi omitida por ser tabela administrativa do Sequelize, não parte do MER de negócio.
 
 ```mermaid
 erDiagram
@@ -62,9 +65,14 @@ erDiagram
         DATETIME created_at
         DATETIME updated_at
     }
+    sessions {
+        VARCHAR session_id PK
+        INT expires
+        TEXT data "nullable"
+    }
 ```
 
-Cada receita pertence a um usuário e cada rampa pertence a uma receita. As duas chaves estrangeiras são obrigatórias e usam `ON DELETE CASCADE` e `ON UPDATE CASCADE`.
+Cada receita pertence a um usuário e cada rampa pertence a uma receita. As duas chaves estrangeiras são obrigatórias e usam `ON DELETE CASCADE` e `ON UPDATE CASCADE`. A tabela `sessions` não tem chave estrangeira: ela guarda o estado da sessão do navegador e é lida e apagada pelo armazenamento de sessão da aplicação.
 
 ## Entidades planejadas, ainda sem migrations na `main`
 
@@ -118,6 +126,16 @@ JSON e atributos dos models usam camelCase; tabelas e colunas físicas usam snak
 | `updated_at` | `datetime` | Não | default current_timestamp() |
 
 `users.email` possui índice único. O banco não tem UNIQUE composto em `recipes(user_id, name)`; a regra de nome de receita por usuário pertence à aplicação. `updated_at` é mantido pelo Sequelize nas operações da aplicação, sem cláusula `ON UPDATE` no DDL observado.
+
+### `sessions`
+
+| Coluna | Tipo na migration | Aceita NULL | Chave / default |
+|---|---|---|---|
+| `session_id` | `varchar(128)` | Não | PK |
+| `expires` | `int unsigned` | Não | Epoch em segundos, para expiração pelo armazenamento de sessão |
+| `data` | `mediumtext` | Sim | Estado serializado da sessão |
+
+A tabela é criada pela migration `20261024120000-criar-tabela-sessions.js` do Back-End, com engine InnoDB, charset `utf8mb4` e collation `utf8mb4_bin`. As colunas vêm da definição da migration: a observação de banco disponível é de 21/10 e antecede essa tabela.
 
 ### `lots` (complemento, ainda não aplicado)
 

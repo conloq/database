@@ -1,5 +1,7 @@
-%% Atualizado em 24/10/2026 com base nas migrations da main de conloq/Back-End.
+%% Atualizado em 25/10/2026 com base nas migrations da main de conloq/Back-End (9007fe6).
 %% Somente as tabelas implementadas aparecem neste MER.
+%% A tabela sessions e o armazenamento de sessao da aplicacao: nao tem chave estrangeira
+%% e nao e entidade de negocio, mas entra no desenho para que o MER corresponda ao schema aplicado.
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
@@ -34,4 +36,9 @@ erDiagram
         INT recipe_id FK
         DATETIME created_at
         DATETIME updated_at
+    }
+    sessions {
+        VARCHAR session_id PK
+        INT expires
+        TEXT data "nullable"
     }
