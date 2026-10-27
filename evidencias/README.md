@@ -21,4 +21,4 @@ Compare as colunas com as três migrations em [`migrations/`](https://github.com
 
 ## Limites
 
-Esta evidência comprova a estrutura do banco local consultado nessa data. Não comprova o ambiente publicado/Aiven, conteúdo ou integridade de todos os registros, execução de cascatas por exclusão, nem o funcionamento HTTP ou do Cloudinary. `SequelizeMeta` comprova o registro dos nomes; a comparação independente dos metadados confere a estrutura correspondente. A validação histórica em MySQL 8.4.9 é outro ambiente, descrito no Back-End, e não muda a versão observada aqui.
+Esta evidência comprova a estrutura do banco local consultado nessa data. Não comprova o ambiente publicado (TiDB Cloud), conteúdo ou integridade de todos os registros, execução de cascatas por exclusão, nem o funcionamento HTTP ou do Cloudinary. `SequelizeMeta` comprova o registro dos nomes; a comparação independente dos metadados confere a estrutura correspondente. A validação histórica em MySQL 8.4.9 é outro ambiente, descrito no Back-End, e não muda a versão observada aqui.
