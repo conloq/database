@@ -4,7 +4,7 @@
 
 Documentação do banco de dados utilizado pelo projeto **MASH**, desenvolvido no Projeto Integrador do curso de Desenvolvimento de Software Multiplataforma da FATEC Registro.
 
-> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`), mantido como registro. A API em `conloq/Back-End` usa o banco `mash`, criado pelas **migrations do Sequelize** (`npm run db:migrate`, decisão de 12/10/2026): `users`, `recipes` e `temperatures` hoje; `lots` e `analyses` entram pelo depósito (conloq/mash#31 e conloq/mash#1). O MER desse banco novo é a conloq/mash#87, feita depois que a conloq/mash#71 fechar os nomes finais.
+> **Status:** este documento descreve o **schema do app legado** (`conloq/mash`, banco `cervejaria`), mantido como registro. A API em `conloq/Back-End` usa o banco `mash`, criado pelas **migrations do Sequelize** (`npm run db:migrate`, decisão de 12/10/2026): `users`, `recipes`, `temperatures` e `sessions` na `main`; o recorte do depósito está na [conloq/mash#66](https://github.com/conloq/mash/issues/66). O MER desse banco novo é a conloq/mash#87, feita depois que a conloq/mash#71 fechar os nomes finais.
 
 > **Nomes no banco da API (decisão de 08/10/2026, reafirmada em 15/10/2026):** tabelas e colunas em inglês **snake_case** (`user_id`, `recipe_id`, `url_image`, `created_at`); o JSON da API usa camelCase (`userId`, `recipeId`). Os models declaram os atributos em camelCase e a conexão do Sequelize usa `define: { underscored: true }`, que faz a ligação sem código de tradução. Colunas em português mudam de nome: `nome` → `name`, `fone` → `phone`; a tabela `receitas` passa a `recipes`. A regra de 13/10 (banco em camelCase) foi revertida. O schema vem das migrations da pasta `migrations/` do Back-End; o `Connection.sync()` sai do startup pela conloq/mash#71. Detalhes em [`conloq/Back-End`](https://github.com/conloq/Back-End#readme), seção *Nomes*.
 
@@ -49,7 +49,7 @@ Os models atuais não desativam os timestamps padrão do Sequelize. Por isso, as
 
 ### Observação sobre o Projeto Integrador
 
-No depósito do PI (03/11/2026) entram o cadastro de receitas com as **rampas de temperatura**, os lotes e o **envio da imagem do teste de iodo** com a temperatura digitada pelo operador. A análise automática da imagem por visão computacional (OpenCV) fica para o próximo semestre (conloq/mash#34).
+O escopo vigente do depósito e a divisão entre os semestres estão centralizados na [conloq/mash#66](https://github.com/conloq/mash/issues/66) e em [`conloq/documentation/geral/README.md`](https://github.com/conloq/documentation/blob/main/geral/README.md).
 
 ---
 

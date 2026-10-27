@@ -1,6 +1,6 @@
 # Banco de Dados: Mash
 
-A fonte do schema da API são as [migrations do Back-End na revisão atual](https://github.com/conloq/Back-End/tree/9007fe6ffd4836ab8571dc8c6f44a17b6dc8d8a5/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde às migrations da revisão então examinada nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
+A fonte do schema da API são as [migrations do Back-End na revisão atual](https://github.com/conloq/Back-End/tree/main/migrations). Em 21/10/2026, uma consulta somente de leitura confirmou que o banco local `mash` corresponde às migrations da revisão então examinada nos itens descritos abaixo. [Evidências e reprodução](evidencias/README.md).
 
 ## Banco atual e ambiente conferido
 
@@ -15,13 +15,13 @@ A fonte do schema da API são as [migrations do Back-End na revisão atual](http
 | Collation das tabelas de negócio | `utf8mb4_general_ci` |
 | Collation de `SequelizeMeta` | `utf8_unicode_ci` |
 | Sensibilidade a caixa | `lower_case_table_names=0` |
-| Código comparado | Back-End `7f33203d06bd796c7840f13f1a445d082dbd7457` |
+| Fonte das migrations | [`conloq/Back-End/migrations`](https://github.com/conloq/Back-End/tree/main/migrations) (conferência de 21/10/2026) |
 
 MariaDB é a versão observada no ambiente local. A configuração da aplicação usa o dialeto `mysql`; a implantação planejada com MySQL externo deve ser conferida separadamente. Esta evidência não comprova o banco publicado.
 
 ### Atualização da fonte em 25/10/2026
 
-A `main` atual do Back-End é `9007fe6ffd4836ab8571dc8c6f44a17b6dc8d8a5`. A comparação com a revisão examinada na evidência de 21/10 (`7f33203d06bd796c7840f13f1a445d082dbd7457`) mostra, além de formatação, uma migration a mais: a de `sessions`, criada em 24/10 para o armazenamento de sessão da aplicação. As quatro migrations criam `users`, `recipes`, `temperatures` e `sessions`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O MER implementado e o modelo planejado estão em diagramas separados.
+Na `main` atual do Back-End, em relação à conferência de 21/10, entrou a quarta migration (`sessions`, criada em 24/10 para o armazenamento de sessão da aplicação). As quatro migrations criam `users`, `recipes`, `temperatures` e `sessions`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O MER implementado e o modelo planejado estão em diagramas separados.
 
 O despejo `schema-api.sql` e os arquivos de `evidencias/` são observações de 21/10 e precedem a migration de `sessions`; por isso continuam descrevendo o banco com três tabelas de negócio. As colunas de `sessions` aqui vêm da definição da migration, não de uma consulta ao banco.
 
@@ -76,7 +76,7 @@ Cada receita pertence a um usuário e cada rampa pertence a uma receita. As duas
 
 ## Entidades planejadas, ainda sem migrations na `main`
 
-O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas e a adição `temperatures.active_temperature`. `lots` depende da #31; `analyses` permanece no recorte do próximo semestre. `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `Telemetria_IOT` e `Registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
+O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas e a adição `temperatures.active_temperature`. `lots` depende da #31; `analyses` não possui migration na `main` (escopo vigente na [#66](https://github.com/conloq/mash/issues/66)). `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `Telemetria_IOT` e `Registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
 
 ## Colunas físicas do modelo atualizado
 
@@ -192,7 +192,7 @@ Os testes de schema que criam dados ou fazem rollback devem usar banco descartá
 
 - Implementado e observado: `users`, `recipes`, `temperatures` e `SequelizeMeta`.
 - Planejado neste semestre: `lots`, conforme [#31](https://github.com/conloq/mash/issues/31); não existe no schema nem na main comparados nesta conferência.
-- Teste de iodo: somente simulação no frontend neste semestre, com cena obrigatória no pitch. Não há tabela de análise, upload real, histórico real ou OpenCV exigidos para o depósito; ficam no backlog do próximo semestre, conforme [#66](https://github.com/conloq/mash/issues/66).
+- Escopo por semestre e funcionalidades fora do banco atual: consultar a [#66](https://github.com/conloq/mash/issues/66) e a documentação geral em [`conloq/documentation`](https://github.com/conloq/documentation/blob/main/geral/README.md).
 - Sensores, leituras IoT, reprocessamento e avaliações são futuros; não aparecem no MER como implementados.
 
 ## Complemento de schema solicitado em 21/10/2026
@@ -209,8 +209,6 @@ Por solicitação do Haimon, somente neste repositório, o [SQL complementar](sc
 As colunas novas seguem inglês e snake_case. As tabelas novas usam InnoDB e `utf8mb4_general_ci`. O SQL preserva a exclusão em cascata dos vínculos legados de configuração e histórico; para lotes, usa RESTRICT na exclusão de usuário/receita para preservar os registros. O vínculo entre lote e receita do mesmo usuário precisa de validação na futura API. Os timestamps seguem o padrão atual: default de cadastro; atualização de `updated_at` pela aplicação, sem `ON UPDATE` automático.
 
 Para validar o DDL, usar banco vazio descartável: primeiro `schema-api.sql`, depois `schema-complementar.sql`, uma única vez. O complemento não tem DROP, não copia dados legados e não deve ser aplicado manualmente ao banco da API. A adoção pela aplicação exige novas migrations e alinhamento dos models, em trabalho separado.
-
-Adicionar a referência de `iodine_configs` não antecipa o fluxo real de iodo: neste semestre continua somente a simulação frontend e sua cena obrigatória no pitch. Imagens, resultados de análise, OpenCV e demais funcionalidades futuras não foram acrescentados a este complemento.
 
 ## Arquivos
 
