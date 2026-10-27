@@ -4,7 +4,7 @@ Leitura realizada em `2026-10-21T17:17:42.862Z`, em transação somente de leitu
 
 ## Fontes e resultado
 
-- Código comparado: [Back-End `7f33203`](https://github.com/conloq/Back-End/tree/7f33203d06bd796c7840f13f1a445d082dbd7457).
+- Código comparado: [`conloq/Back-End`](https://github.com/conloq/Back-End/tree/main) (revisão da `main` em 21/10/2026).
 - Servidor observado: MariaDB 10.4.32, banco `mash`, `lower_case_table_names=0`.
 - Tabelas: `users`, `recipes`, `temperatures` e a tabela administrativa `SequelizeMeta`.
 - Comparação: 25 colunas de negócio, tipos, ordem, nulabilidade, defaults, PKs, auto incremento, índices UNIQUE/FK, duas FKs com DELETE/UPDATE CASCADE e três migrations registradas; zero divergências nos itens conferidos.
@@ -17,7 +17,7 @@ Os metadados estão em [schema-local-2026-10-21.json](schema-local-2026-10-21.js
 
 Conecte ao banco de trabalho com o cliente SQL e execute [consultas-schema.sql](consultas-schema.sql). O arquivo consulta apenas metadados e nomes de migrations; não aplica o [schema de referência](../schema-api.sql).
 
-Compare as colunas com as três migrations em [`migrations/`](https://github.com/conloq/Back-End/tree/7f33203d06bd796c7840f13f1a445d082dbd7457/migrations), os atributos mapeados em [`models/`](https://github.com/conloq/Back-End/tree/7f33203d06bd796c7840f13f1a445d082dbd7457/models) e as relações em [`config/associations.js`](https://github.com/conloq/Back-End/blob/7f33203d06bd796c7840f13f1a445d082dbd7457/config/associations.js).
+Compare as colunas com as três migrations em [`migrations/`](https://github.com/conloq/Back-End/tree/main/migrations), os atributos mapeados em [`models/`](https://github.com/conloq/Back-End/tree/main/models) e as relações em [`config/associations.js`](https://github.com/conloq/Back-End/blob/main/config/associations.js).
 
 ## Limites
 
