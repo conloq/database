@@ -1,9 +1,12 @@
-%% Atualizado em 28/10/2026 com base nas migrations de conloq/Back-End.
-%% Somente as tabelas implementadas aparecem neste MER. A tabela sessions foi removida
-%% pela migration 20261028120000-remover-tabela-sessions.
+%% Atualizado em 29/10/2026: inclui a tabela lots.
+%% users, recipes e temperatures vêm das migrations de conloq/Back-End. lots ainda não tem
+%% migration na main do Back-End (#31 em Ready): foi incluída por decisão do Haimon em
+%% 29/10/2026. Se a #31 não entrar até a entrega de 03/11/2026, voltar lots para o MER planejado.
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
+    users ||--o{ lots : possui
+    recipes ||--o{ lots : possui
 
     users {
         INT id PK
@@ -33,6 +36,16 @@ erDiagram
         TIME ideal_time
         INT order_ramp "nullable"
         INT recipe_id FK
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    lots {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        INT recipe_id FK
+        DATETIME mash_start
+        ENUM status "active ou completed"
         DATETIME created_at
         DATETIME updated_at
     }
