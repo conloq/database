@@ -26,12 +26,14 @@ O despejo `schema-api.sql` e os arquivos de `evidencias/` são observações de 
 
 ## Entidades implementadas nas migrations atuais
 
-O arquivo [`diagrama_mer_mash.mmd`](diagrama_mer_mash.mmd) contém as três tabelas de negócio da API. `SequelizeMeta` foi omitida por ser tabela administrativa do Sequelize, não parte do MER de negócio.
+O arquivo [`diagrama_mer_mash.mmd`](diagrama_mer_mash.mmd) contém as quatro tabelas de negócio do recorte: `users`, `recipes`, `temperatures` e `lots`. `lots` entrou por decisão de 29/10/2026, antes de existir a migration da #31. `SequelizeMeta` foi omitida por ser tabela administrativa do Sequelize, não parte do MER de negócio.
 
 ```mermaid
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
+    users ||--o{ lots : possui
+    recipes ||--o{ lots : possui
 
     users {
         INT id PK
@@ -64,13 +66,23 @@ erDiagram
         DATETIME created_at
         DATETIME updated_at
     }
+    lots {
+        INT id PK
+        VARCHAR name
+        INT user_id FK
+        INT recipe_id FK
+        DATETIME mash_start
+        ENUM status "active ou completed"
+        DATETIME created_at
+        DATETIME updated_at
+    }
 ```
 
-Cada receita pertence a um usuário e cada rampa pertence a uma receita. As duas chaves estrangeiras são obrigatórias e usam `ON DELETE CASCADE` e `ON UPDATE CASCADE`.
+Cada receita pertence a um usuário, cada rampa pertence a uma receita e cada lote pertence a um usuário e a uma receita. As chaves estrangeiras de receitas e rampas são obrigatórias e usam `ON DELETE CASCADE` e `ON UPDATE CASCADE`; as de `lots` entram com a migration da #31.
 
 ## Entidades planejadas, ainda sem migrations na `main`
 
-O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas e a adição `temperatures.active_temperature`. `lots` depende da #31; `analyses` não possui migration na `main` (escopo vigente na [#66](https://github.com/conloq/mash/issues/66)). `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `Telemetria_IOT` e `Registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
+O arquivo [`diagrama_mer_planejado.mmd`](diagrama_mer_planejado.mmd) separa as entidades previstas e a adição `temperatures.active_temperature`. `lots` saiu deste bloco em 29/10/2026 e está no diagrama implementado, à espera da migration da #31; `analyses` não possui migration na `main` (escopo vigente na [#66](https://github.com/conloq/mash/issues/66)). `iodine_configs` e `login_history` vêm do schema complementar, ainda sem migrations da API. Os nomes `Telemetria_IOT` e `Registro`, citados na #87, não têm definição canônica de colunas e por isso não foram desenhados. Nenhum desses elementos representa o schema atualmente aplicado à API.
 
 ## Colunas físicas do modelo atualizado
 
@@ -175,7 +187,7 @@ Os testes de schema que criam dados ou fazem rollback devem usar banco descartá
 ## Implementado, planejado e simulado
 
 - Implementado e observado: `users`, `recipes`, `temperatures` e `SequelizeMeta`.
-- Planejado neste semestre: `lots`, conforme [#31](https://github.com/conloq/mash/issues/31); não existe no schema nem na main comparados nesta conferência.
+- `lots`: está no MER implementado por decisão de 29/10/2026, mas ainda não existe no schema nem na `main` comparados nesta conferência; a migration é a [#31](https://github.com/conloq/mash/issues/31). Volta ao bloco planejado se a #31 não entrar até 03/11/2026.
 - Escopo por semestre e funcionalidades fora do banco atual: consultar a [#66](https://github.com/conloq/mash/issues/66) e a documentação geral em [`conloq/documentation`](https://github.com/conloq/documentation/blob/main/geral/README.md).
 - Sensores, leituras IoT, reprocessamento e avaliações são futuros; não aparecem no MER como implementados.
 
