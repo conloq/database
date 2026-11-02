@@ -1,12 +1,12 @@
-%% Atualizado em 29/10/2026: inclui a tabela lots.
-%% users, recipes e temperatures vêm das migrations de conloq/Back-End. lots ainda não tem
-%% migration na main do Back-End (#31 em Ready): foi incluída por decisão do Haimon em
-%% 29/10/2026. Se a #31 não entrar até a entrega de 03/11/2026, voltar lots para o MER planejado.
+%% Atualizado em 02/11/2026: inclui login_history.
+%% Todas as tabelas vêm das migrations de conloq/Back-End: lots pela 20261029120000-criar-tabela-lot
+%% (conloq/Back-End#35) e login_history pela 20261102120000-criar-tabela-login-history (conloq/Back-End#37).
 erDiagram
     users ||--o{ recipes : possui
     recipes ||--o{ temperatures : possui
     users ||--o{ lots : possui
     recipes ||--o{ lots : possui
+    users ||--o{ login_history : registra
 
     users {
         INT id PK
@@ -46,6 +46,16 @@ erDiagram
         INT recipe_id FK
         DATETIME mash_start
         ENUM status "active ou completed"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    login_history {
+        INT id PK
+        VARCHAR ip_address
+        DATETIME logged_at
+        VARCHAR location
+        BOOLEAN status "nullable"
+        INT user_id FK
         DATETIME created_at
         DATETIME updated_at
     }
