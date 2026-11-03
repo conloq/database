@@ -8,8 +8,8 @@ A fonte do schema da API são as [migrations do Back-End na revisão atual](http
 |---|---|
 | Servidor local | MariaDB 10.4.32, acessado pelo dialeto MySQL do Sequelize |
 | Banco | `mash` |
-| Tabelas de negócio | `users`, `recipes`, `temperatures` (em 02/11 as migrations também criam `lots` e `login_history`; ver abaixo) |
-| Controle de migrations | `SequelizeMeta`, com cinco migrations registradas (conferido no banco local em 28/10/2026) |
+| Tabelas de negócio | `users`, `recipes`, `temperatures`; as migrations de 29/10 e 02/11 criam também `lots` e `login_history` (ver abaixo) |
+| Controle de migrations | `SequelizeMeta`, com cinco migrations registradas na conferência do banco local de 28/10/2026; o Back-End tem sete desde 02/11 |
 | Engine | InnoDB |
 | Collation das tabelas de negócio | `utf8mb4_general_ci` |
 | Collation de `SequelizeMeta` | `utf8_unicode_ci` |
@@ -20,7 +20,7 @@ MariaDB é a versão observada no ambiente local. A configuração da aplicaçã
 
 ### Atualização da fonte em 28/10/2026
 
-Em 24/10 entrou a migration `20261024120000-criar-tabela-sessions`, para a sessão do frontend EJS. Em 28/10 o frontend passou a ser Next.js (React), que guarda o JWT no navegador e não conecta ao banco; a migration `20261028120000-remover-tabela-sessions` removeu a tabela. Com as cinco migrations aplicadas, o schema da API volta a ter só `users`, `recipes` e `temperatures`; `lots` ainda não está nas migrations da `main` e permanece dependente da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31). O MER implementado e o modelo planejado estão em diagramas separados.
+Em 24/10 entrou a migration `20261024120000-criar-tabela-sessions`, para a sessão do frontend EJS. Em 28/10 o frontend passou a ser Next.js (React), que guarda o JWT no navegador e não conecta ao banco; a migration `20261028120000-remover-tabela-sessions` removeu a tabela. Naquela data, com as cinco migrations aplicadas, o schema da API tinha só `users`, `recipes` e `temperatures`; `lots` dependia da [#31 do conloq/mash](https://github.com/conloq/mash/issues/31) e entrou em 29/10 (ver a atualização de 02/11). O MER implementado e o modelo planejado estão em diagramas separados.
 
 ### Atualização da fonte em 02/11/2026
 
@@ -148,7 +148,7 @@ JSON e atributos dos models usam camelCase; tabelas e colunas físicas usam snak
 
 `users.email` possui índice único. O banco não tem UNIQUE composto em `recipes(user_id, name)`; a regra de nome de receita por usuário pertence à aplicação. `updated_at` é mantido pelo Sequelize nas operações da aplicação, sem cláusula `ON UPDATE` no DDL observado.
 
-### `lots` (complemento, ainda não aplicado)
+### `lots` (migration `20261029120000-criar-tabela-lot`)
 
 | Coluna | Tipo de referência | Aceita NULL | Chave / default |
 |---|---|---|---|
